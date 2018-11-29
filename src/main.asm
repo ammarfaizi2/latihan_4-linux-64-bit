@@ -1,11 +1,18 @@
 section .rodata
 	a11 db "Siapa nama Anda? "
+	l_a11 equ $ - a11
+	
 	a12 db "Halo, "
+	l_a12 equ $ - a12
+	
 	a13 db "!",10
+	l_a13 equ $ - a13
+
+	filename db "result"
+
 section .bss
 	z11 resb 30
-
-section .text
+section .data
 	global _start
 
 _start:
@@ -14,12 +21,25 @@ _start:
 	mov rax,-1
 	call cleanName
 	mov r15,rax
+	call writeFile
 	call print_a12
 	call printName
 	call print_a13
 	mov rax,60
 	mov rdi,0
 	syscall
+writeFile:
+	mov rax,2
+	mov rdi,filename
+	mov rsi,1
+	mov rdx,439
+	syscall
+	mov rdi,rax
+	mov rax,1
+	mov rsi,a12
+	mov rdx,l_a12
+	syscall
+	ret
 cleanName:
 	inc rax
 	mov rdi,255
@@ -52,20 +72,20 @@ print_a11:
 	mov rax,1
 	mov rdi,1
 	mov rsi,a11,
-	mov rdx,17
+	mov rdx,l_a11
 	syscall
 	ret
 print_a12:
 	mov rax,1
 	mov rdi,1
 	mov rsi,a12,
-	mov rdx,6
+	mov rdx,l_a12
 	syscall
 	ret
 print_a13:
 	mov rax,1
 	mov rdi,1
 	mov rsi,a13
-	mov rdx,2
+	mov rdx,l_a13
 	syscall
 	ret
