@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @author Ammar Faizi <ammarfaizi2@gmail.com>
+ * @param string $str
+ * @return string
+ */
+function encrypt(string $str, string $key): string
+{	
+	// $salt = "";
+	// for ($i=0; $i < 5; $i++) { 
+	// 	$salt .= chr(rand(0, 0xff));
+	// }
+	$salt = "12345";
+		
+	$rsalt = "";
+	for ($i=0; $i < 5; $i++) { 
+		$rsalt .= chr(
+			((ord($salt[$i]) | ord($salt[4 - $i])) << (ord($salt[1]) % 0x64)) & 0xff
+		);
+		for ($k=0; $k < 5; $k++) { 
+			$rsalt .= chr(
+				(((ord($salt[$i]) ^ $k) << 0x19) % 0xff) ^ ord($rsalt[$i-$k-1])
+			);
+		}
+		$rsalt .= chr(
+			(ord($salt[$i]) & ord($salt[4 - $i])) ^ ord($rsalt[$i + 1]) ^
+			ord($rsalt[$i + 2]) ^ ord($rsalt[$i + 3]) ^ ord($rsalt[$i + 4]) ^
+			ord($rsalt[$i + 5])
+		);
+	}
+	var_dump($rsalt);die;
+
+	$cs = strlen($str);
+	$ck = strlen($key);
+	$cr = strlen($rsalt);
+
+	$r = "";
+	for ($i = 0; $i < $cs; $i++) {
+
+		$rtmp = (
+			ord($str[$i]) ^ ord($key[$i % $ck]) ^ (($cost | (($i+0x1) << 0x30)) % 255)
+		);
+
+		for ($k=0; $k < $ck; $k++) { 
+			$rtmp ^= (
+				(ord($key[$k]) ^ (((ord($key[$k]) << 0x38) >> (($k % 8) << 0x3)) & 0xff)) ^
+				(
+					(((ord($salt[0]) << 0x38) >> (($k % 0x8) << 0x3)) & 0xff) |
+					(((ord($salt[1]) << 0x30) >> (($k % 0x8) << 0x3)) & 0xff) &
+					(((ord($salt[2]) << 0x28) >> (($k % 0x8) << 0x3)) & 0xff) |
+					(((ord($salt[3]) << 0x20) >> (($k % 0x8) << 0x3)) & 0xff) &
+					(((ord($salt[4]) << 0x18) >> (($k % 0x8) << 0x3)) & 0xff)
+				)
+			);
+		}
+		
+		for ($k=0; $k < $rsalt; $k++) { 
+			$rtmp ^= ord($rsalt[$k]);
+		}
+
+		$r .= sprintf("%02s ", dechex($rtmp));
+	}
+
+	// $r .= $salt;
+
+	return $r;
+}
+
+function decrypt(string $str, string $key): string
+{
+
+}
+
+$str = "@KodingTeh minumnya Es Teh\xff";
+$key = "kodingteh123";
+
+print encrypt($str, $key)."\n";
+
+
+function me($s)
+{
+	$s = str_split(sprintf("%064s", decbin($s)), 8);
+	$b = false;
+	foreach ($s as &$v) {
+		$v = $v;
+		if ($v === "00000000") {
+			$b or $v = "\033[0;31m00000000\033[0m";
+		} else {
+			$b = true;
+		}
+		$v = "\033[0;32m{$v}\033[0m";
+	}
+
+	unset($v);
+	return implode($s, " ");
+}
