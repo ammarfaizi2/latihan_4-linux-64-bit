@@ -20,7 +20,7 @@ _start:
 	call print_name
 	call print_a13
 	mov rax,60
-	mov rdi,0
+	xor rdi,rdi
 	syscall
 clean_name:
 	inc rax
