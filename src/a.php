@@ -26,7 +26,6 @@ function me($s)
 for ($i=0; $i < 8; $i++) {
 	print me($a = 0x61462072616d6d41)." = \033[1;33m0x61462072616d6d41\033[0m\n";
 	print me($b = 255 << ($i << 3))." = ".me2(dechex($b))."\n";
-	var_dump($b);
 	print "\033[1;36m".str_repeat("-", 75)."\033[0m and\n";
 	$a = $a & $b;
 	print me($a)." = ".me2(dechex($a))."\n";
@@ -34,7 +33,7 @@ for ($i=0; $i < 8; $i++) {
 	$a = $a >> $b;
 	print "\033[1;36m".str_repeat("-", 75)."\033[0m right shift {$b} bit\n";
 	print me($a)." = ".me2(dechex($a))."\n";
-	print chr(((0x61462072616d6d41 & (255 << ($i << 3)) ) >> ($i << 3))). " ";
+	// print chr(((0x61462072616d6d41 & (255 << ($i << 3)) ) >> ($i << 3))). " ";
 
 	print "\n\n";
 }
